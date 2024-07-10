@@ -74,7 +74,8 @@ func main() {
 
 		// Send a string response to the client
 		return c.JSON(fiber.Map{
-			"status": fiber.StatusOK,
+			"status":  fiber.StatusOK,
+			"message": "Hello, world",
 		})
 	})
 
