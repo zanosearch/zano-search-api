@@ -81,24 +81,24 @@ func OfferSearch(instanceId string, tokens []string, offers []zano.MarketplaceOf
 				if data.BazaarInstanceId == instanceId {
 					var score int
 					for _, token := range tokens {
-						if strings.Contains(data.Description, token) {
+						if strings.Contains(strings.ToLower(data.Description), token) {
 							score++
 						}
 
-						if strings.Contains(data.Title, token) {
+						if strings.Contains(strings.ToLower(data.Title), token) {
 							score++
 						}
 
 						for _, ware := range data.Wares {
-							if strings.Contains(ware.Title, token) {
+							if strings.Contains(strings.ToLower(ware.Title), token) {
 								score++
 							}
 
-							if strings.Contains(ware.Description, token) {
+							if strings.Contains(strings.ToLower(ware.Description), token) {
 								score++
 							}
 
-							if strings.Contains(ware.Info, token) {
+							if strings.Contains(strings.ToLower(ware.Info), token) {
 								score++
 							}
 						}
