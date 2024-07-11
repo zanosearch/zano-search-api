@@ -1,0 +1,30 @@
+{
+    "id": 0,
+    "jsonrpc": "2.0",
+    "method": "marketplace_push_offer",
+    "params": {
+        "od": {
+            "ap": "",
+            "at": "",
+            "b": "",
+            "cat": "",
+            "cnt": "",
+            "com": "",
+            "do": "",
+            "et": 0,
+            "fee": 10000000000,
+            "index_in_tx": 0,
+            "lci": "",
+            "lco": "",
+            "ot": 0,
+            "p": "",
+            "pt": "",
+            "security": "",
+            "t": "",
+            "timestamp": 0,
+            "tx_hash": "",
+            "tx_original_hash": "",
+            "url": ""
+        }
+    }
+}

@@ -24,6 +24,7 @@ func getEnvVar(key string) string {
 
 func main() {
 	//mongoUri := getEnvVar("MONGO_URI_DEV")
+	//daemonUrl := getEnvVar("DAEMON_URL")
 
 	// Initialize a new Fiber app
 	// Custom config
