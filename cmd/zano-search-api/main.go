@@ -9,9 +9,17 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/logger"
 	"github.com/gofiber/fiber/v3/middleware/recover"
 	"github.com/joho/godotenv"
+	"github.com/zanosearch/zano-search-api/internal/nlp"
+	"github.com/zanosearch/zano-search-api/internal/search"
+	"github.com/zanosearch/zano-search-api/internal/zano"
 	"log"
 	"os"
+	"strings"
 )
+
+type Query struct {
+	Query string `json:"query"`
+}
 
 func getEnvVar(key string) string {
 	err := godotenv.Load("../../.env")
@@ -24,7 +32,9 @@ func getEnvVar(key string) string {
 
 func main() {
 	//mongoUri := getEnvVar("MONGO_URI_DEV")
-	//daemonUrl := getEnvVar("DAEMON_URL")
+	daemonUrl := getEnvVar("DAEMON_URL")
+	instanceId := getEnvVar("BAZAAR_INSTANCE_ID")
+	//instanceSecret := getEnvVar("PLAINTEXT_INSTANCE_SECRET")
 
 	// Initialize a new Fiber app
 	// Custom config
@@ -68,15 +78,41 @@ func main() {
 	})
 	// Get alias
 	v1.Post("/search", func(c fiber.Ctx) error {
-		//o := new(Offers)
-		//if err := c.Bind().JSON(o); err != nil {
-		//	return err
-		//}
+		query := new(Query)
+		if err := c.Bind().JSON(query); err != nil {
+			return err
+		}
+
+		offers, err := zano.GetOffers(daemonUrl, 1000)
+		if err != nil {
+			return c.JSON(fiber.Map{
+				"status": fiber.StatusOK,
+				"data":   "Unable to connect to daemon, check it is running",
+			})
+		}
+
+		if offers.Result.Status == "NOT_FOUND" || len(offers.Result.Offers) == 0 {
+			// Send a string response to the client
+			return c.JSON(fiber.Map{
+				"status": fiber.StatusOK,
+				"data":   offers.Result.Status,
+			})
+		}
+
+		// TODO: Working from here
+		// make search query lowercase
+		queryLowercase := strings.ToLower(query.Query)
+		defaultNlp, err := nlp.DefaultNlp(queryLowercase)
+		if err != nil {
+			return err
+		}
+
+		searchResults := search.OfferSearch(instanceId, defaultNlp, offers.Result.Offers)
 
 		// Send a string response to the client
 		return c.JSON(fiber.Map{
-			"status":  fiber.StatusOK,
-			"message": "Hello, world",
+			"status": fiber.StatusOK,
+			"data":   searchResults,
 		})
 	})
 

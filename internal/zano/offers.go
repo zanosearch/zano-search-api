@@ -9,35 +9,37 @@ import (
 	"net/http"
 )
 
+type MarketplaceOffers struct {
+	Ap             string `json:"ap"`
+	At             string `json:"at"`
+	B              string `json:"b"`
+	Cat            string `json:"cat"`
+	Cnt            string `json:"cnt"`
+	Com            string `json:"com"`
+	Do             string `json:"do"`
+	Et             int    `json:"et"`
+	Fee            int64  `json:"fee"`
+	IndexInTx      int    `json:"index_in_tx"`
+	Lci            string `json:"lci"`
+	Lco            string `json:"lco"`
+	Ot             int    `json:"ot"`
+	P              string `json:"p"`
+	Pt             string `json:"pt"`
+	Security       string `json:"security"`
+	T              string `json:"t"`
+	Timestamp      int    `json:"timestamp"`
+	TxHash         string `json:"tx_hash"`
+	TxOriginalHash string `json:"tx_original_hash"`
+	Url            string `json:"url"`
+}
+
 type MarketplaceResponse struct {
 	Id      int    `json:"id"`
 	Jsonrpc string `json:"jsonrpc"`
 	Result  struct {
-		Offers []struct {
-			Ap             string `json:"ap"`
-			At             string `json:"at"`
-			B              string `json:"b"`
-			Cat            string `json:"cat"`
-			Cnt            string `json:"cnt"`
-			Com            string `json:"com"`
-			Do             string `json:"do"`
-			Et             int    `json:"et"`
-			Fee            int64  `json:"fee"`
-			IndexInTx      int    `json:"index_in_tx"`
-			Lci            string `json:"lci"`
-			Lco            string `json:"lco"`
-			Ot             int    `json:"ot"`
-			P              string `json:"p"`
-			Pt             string `json:"pt"`
-			Security       string `json:"security"`
-			T              string `json:"t"`
-			Timestamp      int    `json:"timestamp"`
-			TxHash         string `json:"tx_hash"`
-			TxOriginalHash string `json:"tx_original_hash"`
-			Url            string `json:"url"`
-		} `json:"offers"`
-		Status      string `json:"status"`
-		TotalOffers int    `json:"total_offers"`
+		Offers      []MarketplaceOffers `json:"offers"`
+		Status      string              `json:"status"`
+		TotalOffers int                 `json:"total_offers"`
 	} `json:"result"`
 }
 
