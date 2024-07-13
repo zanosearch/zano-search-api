@@ -9,16 +9,22 @@ import (
 	"github.com/gofiber/fiber/v3/middleware/logger"
 	"github.com/gofiber/fiber/v3/middleware/recover"
 	"github.com/joho/godotenv"
+	"github.com/zanosearch/zano-search-api/internal/base64"
 	"github.com/zanosearch/zano-search-api/internal/nlp"
 	"github.com/zanosearch/zano-search-api/internal/search"
 	"github.com/zanosearch/zano-search-api/internal/zano"
 	"log"
 	"os"
+	"sort"
 	"strings"
 )
 
 type Query struct {
 	Query string `json:"query"`
+}
+
+type Bazaar struct {
+	Uuid string `json:"uuid"`
 }
 
 func getEnvVar(key string) string {
@@ -109,10 +115,58 @@ func main() {
 
 		searchResults := search.OfferSearch(instanceId, defaultNlp, offers.Result.Offers)
 
+		sort.SliceStable(searchResults, func(i, j int) bool {
+			return searchResults[i].Score > searchResults[j].Score
+		})
+
 		// Send a string response to the client
 		return c.JSON(fiber.Map{
 			"status": fiber.StatusOK,
 			"data":   searchResults,
+		})
+	})
+
+	v1.Post("/bazaar", func(c fiber.Ctx) error {
+		bazaar := new(Bazaar)
+		if err := c.Bind().JSON(bazaar); err != nil {
+			return err
+		}
+
+		offers, err := zano.GetOffers(daemonUrl, 1000)
+		if err != nil {
+			return c.JSON(fiber.Map{
+				"status": fiber.StatusOK,
+				"data":   "Unable to connect to daemon, check it is running",
+			})
+		}
+
+		if offers.Result.Status == "NOT_FOUND" || len(offers.Result.Offers) == 0 {
+			// Send a string response to the client
+			return c.JSON(fiber.Map{
+				"status": fiber.StatusOK,
+				"data":   offers.Result.Status,
+			})
+		}
+
+		var bazaarObj []search.Offer
+
+		for _, offer := range offers.Result.Offers {
+			// 1. decode base64
+			ds, err := base64.DecodeBase64(offer.Com)
+			if err == nil {
+				data := search.Offer{}
+				if err = sonic.Unmarshal([]byte(ds), &data); err == nil {
+					if data.Type == "bazaar" && data.BazaarUuid == bazaar.Uuid {
+						bazaarObj = append(bazaarObj, data)
+					}
+				}
+			}
+		}
+
+		// Send a string response to the client
+		return c.JSON(fiber.Map{
+			"status": fiber.StatusOK,
+			"data":   bazaarObj,
 		})
 	})
 
