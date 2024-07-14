@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/bytedance/sonic"
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/compress"
@@ -148,7 +149,7 @@ func main() {
 			})
 		}
 
-		var bazaarObj []search.Offer
+		var bazaarObj search.Offer
 
 		for _, offer := range offers.Result.Offers {
 			// 1. decode base64
@@ -157,11 +158,13 @@ func main() {
 				data := search.Offer{}
 				if err = sonic.Unmarshal([]byte(ds), &data); err == nil {
 					if data.Type == "bazaar" && data.BazaarUuid == bazaar.Uuid {
-						bazaarObj = append(bazaarObj, data)
+						bazaarObj = data
 					}
 				}
 			}
 		}
+
+		fmt.Println(bazaarObj)
 
 		// Send a string response to the client
 		return c.JSON(fiber.Map{

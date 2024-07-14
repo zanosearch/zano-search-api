@@ -1,6 +1,7 @@
 package search
 
 import (
+	"fmt"
 	"github.com/bytedance/sonic"
 	"github.com/zanosearch/zano-search-api/internal/base64"
 	"github.com/zanosearch/zano-search-api/internal/zano"
@@ -47,6 +48,7 @@ type Offer struct {
 		Price       string   `json:"price"`
 		Info        string   `json:"info"`
 		Images      []string `json:"images"`
+		IsDigital   bool     `json:"is_digital"`
 	} `json:"wares,omitempty"`
 	Fulfillment struct {
 		IsDigital             bool   `json:"is_digital"`
@@ -77,6 +79,7 @@ func OfferSearch(instanceId string, tokens []string, offers []zano.MarketplaceOf
 		if err == nil {
 			data := Offer{}
 			if err = sonic.Unmarshal([]byte(ds), &data); err == nil {
+				fmt.Println(data)
 				// 2. TODO: check title, description and wares for token matches and rank
 				if data.BazaarInstanceId == instanceId {
 					var score int
