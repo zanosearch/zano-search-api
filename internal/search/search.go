@@ -1,7 +1,6 @@
 package search
 
 import (
-	"fmt"
 	"github.com/bytedance/sonic"
 	"github.com/zanosearch/zano-search-api/internal/base64"
 	"github.com/zanosearch/zano-search-api/internal/zano"
@@ -79,7 +78,6 @@ func OfferSearch(instanceId string, tokens []string, offers []zano.MarketplaceOf
 		if err == nil {
 			data := Offer{}
 			if err = sonic.Unmarshal([]byte(ds), &data); err == nil {
-				fmt.Println(data)
 				// 2. TODO: check title, description and wares for token matches and rank
 				if data.BazaarInstanceId == instanceId {
 					var score int
